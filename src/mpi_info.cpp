@@ -1,9 +1,12 @@
-#include <cstdio>
+#ifndef MPI_INFO_H
+#define MPI_INFO_H
+
 
 #ifdef HAVE_MPI
 #include "mpi.h"
 #endif
 
+#include <cstdio>
 #include "mpi_info.h"
 
 MPI_info::MPI_info() {

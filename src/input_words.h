@@ -6,6 +6,8 @@
 #include <vector>
 #include <map>
 
+#include "mpi_info.h"
+
 namespace KEYS {
   enum KeyVal {
     JOBNAME = 0,
