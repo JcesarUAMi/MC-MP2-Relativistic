@@ -4,7 +4,7 @@
 #include "mpi.h"
 #endif
 
-#include "qc_mpi.h"
+#include "mpi_info.h"
 
 MPI_info::MPI_info() {
   /*
