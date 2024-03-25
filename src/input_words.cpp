@@ -122,13 +122,16 @@ void IOPs::read(const MPI_info& mpi_info, const std::string& file) {
     input.close();
   }
 
-  MPI_info::barrier();
-  MPI_info::broadcast_int(iopns.data(), iopns.size());
-  MPI_info::broadcast_double(dopns.data(), dopns.size());
-  MPI_info::broadcast_char((char*) bopns.data(), bopns.size());
-  for (auto &it : sopns) {
-    MPI_info::broadcast_string(it);
-  }
+#ifdef HAVE_MPI
+  MPI_Barrier(MPI_COMM_WORLD);
+
+  MPI_Bcast(iopns.data(), iopns.size(), MPI_INT, 0, MPI_COMM_WORLD);
+  MPI_Bcast(dopns.data(), dopns.size(), MPI_DOUBLE, 0, MPI_COMM_WORLD);
+  MPI_Bcast(bopns.data(), bopns.size(), MPI_CHAR, 0, MPI_COMM_WORLD);
+
+  MPI_Barrier(MPI_COMM_WORLD);
+#endif
+
 }
 
 void IOPs::print(const MPI_info& mpi_info, const std::string& file) {

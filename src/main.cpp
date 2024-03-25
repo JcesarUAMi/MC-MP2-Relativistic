@@ -19,45 +19,32 @@ using namespace std;
 #include "mpi.h"
 #endif
 
-
-
 int main (int argc, char *argv[]) {
 
-// For non-relativistica calculations
-  fstream xyz;
-  fstream movecs;
-  fstream basis;
-  Integration ie;
-//  Grid gd;
-//  gd.Data(basis, xyz, movecs);
-  ie.Data(basis, xyz, movecs);
-  ie.MP2Energy(xyz);
-
-  int mynode, totalnodes, initialized, finalized;
-// For Relativistic calculations
-  fstream info;
-  fstream coeffs;
-  fstream ene;
-  fstream MC;
-  RelaIntegration MCR;
-  
-
-/*
-  auto begin = chrono::high_resolution_clock::now();
-
+  #ifdef HAVE_MPI
   MPI_Init(&argc, &argv);
-  MPI_Comm_size(MPI_COMM_WORLD, &totalnodes);
-  MPI_Comm_rank(MPI_COMM_WORLD, &mynode);
+#endif
+  MPI_info mpi_info;
 
-  MCR.RelaMP2Energy(mynode, totalnodes, info, basis, xyz, coeffs, ene, MC);
+  if (argc != 2) {
+    if (mpi_info.sys_master) {
+      printf("Usage: mcmpN.x <input>\n");
+    }
+    exit(EXIT_FAILURE);
+  } else {
+    if (mpi_info.sys_master) {
+      printf("MC-GFn program developed by the Hirata lab\n");
+      printf("Code compiled from Git-Commit %s\n\n", VERSION);
+    }
+  }
+  mpi_info.print();
 
-  MPI_Finalize();
+  IOPs iops;
+  iops.read(mpi_info, argv[1]);
+  iops.print(mpi_info, argv[1]);
 
-  auto end = chrono::high_resolution_clock::now();
-  auto elapsed = chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
-
-  cout << "Time measured: " <<  setprecision(6) << elapsed.count() * 1e-9 << endl;
-*/
+  Integration ie;
+  
 
   return 0;
 }
