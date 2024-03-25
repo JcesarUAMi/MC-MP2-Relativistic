@@ -1,3 +1,6 @@
+#ifndef MPI_H
+#define MPI_H
+
 #include <string>
 #include <vector>
 

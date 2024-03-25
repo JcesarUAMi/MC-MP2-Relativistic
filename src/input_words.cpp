@@ -25,7 +25,7 @@ IOPs::IOPs() {
   iopns[KEYS::ELECTRON_PAIRS] = 16;
   iopns[KEYS::MC_TRIAL] = 1024;
   iopns[KEYS::NBLOCK] = 1;
-  iopns[KEYS::JOBTYPE] = JOBTYPE::NONRELATIVISTIC;
+  iopns[KEYS::JOBTYPE] = JOBTYPE::NON_RELATIVISTIC;
 
   sopns[KEYS::GEOM] = "geom.xyz";
   sopns[KEYS::BASIS] = "basis.dat";

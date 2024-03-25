@@ -7,28 +7,19 @@
 #include <map>
 
 namespace KEYS {
-  enum KEY_TYPE {
-    STRING,
-    INT,
-    DOUBLE,
-    BOOL,
-    OTHER
-  };
-
-  enum KEYS {
-#define FORMAT(X, Y) X,
-#include "keys.h"
-#undef FORMAT
-  };
-  const std::map<KEYS, KEY_TYPE> KEY_TYPE_TABLE = {
-#define FORMAT(X, Y) {X, Y},
-#include "keys.h"
-#undef FORMAT
-  };
-  const std::vector<std::string> key_strings = {
-#define FORMAT(X, Y) #X,
-#include "keys.h"
-#undef FORMAT
+  enum KeyVal {
+    JOBNAME = 0,
+    JOBTYPE,
+    SPHERICAL,
+    MC_TRIAL,
+    MC_NPAIR,
+    MC_DELX,  // 0-4
+    GEOM,
+    BASIS,
+    MC_BASIS,
+    NBLOCK,
+    MOVECS,  // 5-9
+    DEBUG,
   };
 }
 

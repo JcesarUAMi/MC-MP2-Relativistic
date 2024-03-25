@@ -14,6 +14,8 @@ using namespace std;
 #include "Random.h"
 #include "IntegralEvaluation.h"
 #include "RelaIntEval.h"
+#include "mpi_info.h"
+#include "input_words.h"
 
 #ifdef HAVE_MPI
 #include "mpi.h"
@@ -21,7 +23,7 @@ using namespace std;
 
 int main (int argc, char *argv[]) {
 
-  #ifdef HAVE_MPI
+#ifdef HAVE_MPI
   MPI_Init(&argc, &argv);
 #endif
   MPI_info mpi_info;
