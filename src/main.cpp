@@ -36,7 +36,6 @@ int main (int argc, char *argv[]) {
   } else {
     if (mpi_info.sys_master) {
       printf("MC-GFn program developed by the Hirata lab\n");
-      printf("Code compiled from Git-Commit %s\n\n", VERSION);
     }
   }
   mpi_info.print();

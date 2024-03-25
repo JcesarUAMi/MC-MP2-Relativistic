@@ -11,8 +11,9 @@ namespace KEYS {
     JOBNAME = 0,
     JOBTYPE,
     SPHERICAL,
+    FREEZE_CORE,
     MC_TRIAL,
-    MC_NPAIR,
+    ELECTRON_PAIRS,
     MC_DELX,  // 0-4
     GEOM,
     BASIS,

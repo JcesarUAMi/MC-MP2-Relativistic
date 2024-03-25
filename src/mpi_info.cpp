@@ -19,6 +19,8 @@ MPI_info::MPI_info() {
 #endif
 
   sys_master = 0 == taskid;
+  
+
 }
 
 void MPI_info::print() {
