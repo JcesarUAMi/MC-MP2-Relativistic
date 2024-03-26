@@ -25,12 +25,6 @@ void Molecule::readCoordinates(MPI_info& mpi_info, string& filename) {
     }
   }
 
-#ifdef HAVE_MPI
-  MPI_Barrier(MPI_COMM_WORLD);
-  MPI_Bcast(&natom, 1, MPI_INT, 0, MPI_COMM_WORLD);
-  MPI_Barrier(MPI_COMM_WORLD);
-#endif
-
   geometry >> nNuc;
   geometry.ignore();
   geom.resize(nNuc);
@@ -41,6 +35,11 @@ void Molecule::readCoordinates(MPI_info& mpi_info, string& filename) {
     cout << "\tAtom\t            x                             y                             z" << endl;
     cout << "--------------------------------------------------------------------------------- " << endl;
   }  
+  
+  MPI_Barrier(MPI_COMM_WORLD);
+  MPI_Bcast(&nNuc, 1, MPI_INT, 0, MPI_COMM_WORLD);
+  MPI_Barrier(MPI_COMM_WORLD);
+
   for(int i=0; i<nNuc; ++i) {
     coor[0] = coor[1] = coor[2] = 0.0;
     atomicNumber = 0;
@@ -58,12 +57,10 @@ void Molecule::readCoordinates(MPI_info& mpi_info, string& filename) {
       cout << setw(30) << setprecision(16) << fixed << coor[2] << endl;
     }
 
-#ifdef HAVE_MPI
     MPI_Barrier(MPI_COMM_WORLD);
-    MPI_Bcast(&pos, 3, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-    MPI_Bcast(&znum, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&coor, 3, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&nNuc, 1, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Barrier(MPI_COMM_WORLD);
-#endif
   }
 
   geometry.close();

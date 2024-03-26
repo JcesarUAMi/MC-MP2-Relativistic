@@ -17,30 +17,27 @@ using namespace std;
 #include "mpi_info.h"
 #include "input_words.h"
 
-#ifdef HAVE_MPI
 #include "mpi.h"
-#endif
 
 int main (int argc, char *argv[]) {
 
-#ifdef HAVE_MPI
   MPI_Init(&argc, &argv);
-#endif
   MPI_info mpi_info;
 
   if (argc != 2) {
     if (mpi_info.sys_master) {
       printf("Usage: MC-Rela <input>\n");
     }
-    exit(EXIT_FAILURE);
   } else {
     if (mpi_info.sys_master) {
       printf("Program developed by the Hirata lab\n");
     }
   }
+  
   mpi_info.print();
 
   IOPs iops;
+
   iops.read(mpi_info, argv[1]);
   iops.print(mpi_info, argv[1]);
 
@@ -49,7 +46,19 @@ int main (int argc, char *argv[]) {
 
   molec.readCoordinates(mpi_info, iops.sopns[KEYS::GEOM]);
 
+  if (iops.iopns[KEYS::JOBTYPE] == JOBTYPE::RELATIVISTIC) {
+  
+    cout << "Relativistic Type Job" << endl;
 
+
+  } else if (iops.iopns[KEYS::JOBTYPE] == JOBTYPE::NON_RELATIVISTIC) {
+      
+    cout << "NON Relativistic Type Jpb" << endl;
+  }
+
+
+
+  MPI_Finalize();
 
   return 0;
 }

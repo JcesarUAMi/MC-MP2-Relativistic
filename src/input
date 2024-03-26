@@ -1,0 +1,12 @@
+JOBNAME be_128_DS
+JOBTYPE ENERGY
+MC_TRIAL 100000000
+ELECTRON_PAIRS 128
+GEOM ../../../input/beri.xyz
+BASIS ../../../input/cc-pvdz.basis
+MC_BASIS cc-pvdz.mc_basis
+MOVECS
+        ../../../input/beri.movecs
+END
+
+

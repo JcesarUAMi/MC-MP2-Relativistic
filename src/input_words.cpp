@@ -7,6 +7,7 @@
 
 #include "input_words.h"
 #include "mpi_info.h"
+#include "mpi.h"
 
 IOPs::IOPs() {
   /*
@@ -33,20 +34,6 @@ IOPs::IOPs() {
   sopns[KEYS::MOVECS] = "nwchem.movecs";
   iopns[KEYS::MOVECS] = 0;  // default is binary
 }
-
-template <class T>
-T string_to_enum(std::string str, const std::vector<std::string>& T_vals) {
-  std::transform(str.begin(), str.end(), str.begin(), ::toupper);
-  auto it = std::find(T_vals.begin(), T_vals.end(), str);
-
-  if (it == T_vals.end()) {
-    std::cerr << str << " not reconginzed" << std::endl;
-    exit(0);
-  }
-
-  return static_cast<T>(std::distance(T_vals.begin(), it));
-}
-
 
 void IOPs::read(const MPI_info& mpi_info, const std::string& file) {
   /*
@@ -169,7 +156,6 @@ void IOPs::read(const MPI_info& mpi_info, const std::string& file) {
 
 
 
-#ifdef HAVE_MPI
   MPI_Barrier(MPI_COMM_WORLD);
 
   MPI_Bcast(iopns.data(), iopns.size(), MPI_INT, 0, MPI_COMM_WORLD);
@@ -177,7 +163,6 @@ void IOPs::read(const MPI_info& mpi_info, const std::string& file) {
   MPI_Bcast(bopns.data(), bopns.size(), MPI_CHAR, 0, MPI_COMM_WORLD);
 
   MPI_Barrier(MPI_COMM_WORLD);
-#endif
 
 }
 
