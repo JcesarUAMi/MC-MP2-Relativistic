@@ -7,7 +7,7 @@ using namespace std;
 
 void readDataInput::coefficientsFinal(fstream& basisFile, fstream& xyzFile, fstream& movecsFile) {
 
-  molec.readCoordinates(xyzFile);
+//  molec.readCoordinates(xyzFile);
   molec.getNumberOfDifAtoms();
   lastBasis.resize(molec.nNuc);
   basis.readBasisFile(basisFile, molec.nDifAtoms);

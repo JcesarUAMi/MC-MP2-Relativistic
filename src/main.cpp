@@ -45,7 +45,11 @@ int main (int argc, char *argv[]) {
   iops.print(mpi_info, argv[1]);
 
   Integration ie;
-  
+  Molecule molec;
+
+  molec.readCoordinates(mpi_info, iops.sopns[KEYS::GEOM]);
+
+
 
   return 0;
 }

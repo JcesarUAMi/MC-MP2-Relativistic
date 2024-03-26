@@ -14,7 +14,7 @@ double Weights::normalize(double exponent) {
 
 void Weights::Data(fstream& xyzFile) {
 
-  molec.readCoordinates(xyzFile);
+//  molec.readCoordinates(xyzFile);
   molec.getNumberOfDifAtoms();
   int j, atom;
   size_t l = molec.nNuc;

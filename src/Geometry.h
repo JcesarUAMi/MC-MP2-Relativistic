@@ -6,6 +6,8 @@
 #include <vector>
 using namespace std;
 
+#include "mpi_info.h"
+
 struct Geometry {
   array<double, 3> nCoor;
   int nAtomic;
@@ -19,7 +21,7 @@ class Molecule {
     int nDifAtoms;
     int atomicNumber;
     void getNumberOfDifAtoms();
-    void readCoordinates(fstream&);
+    void readCoordinates(MPI_info&, string&);
     void getAtomicNumber (string);
     vector<Geometry> geom;
     vector<int> numDifAtoms;

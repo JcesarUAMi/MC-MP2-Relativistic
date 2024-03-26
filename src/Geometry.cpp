@@ -5,23 +5,42 @@
 #include <algorithm>
 using namespace std;
 #include "Geometry.h"
+#include "mpi.h"
 
-void Molecule::readCoordinates(fstream& fileXYZ) {
+
+void Molecule::readCoordinates(MPI_info& mpi_info, string& filename) {
   
   double coor[3];
   const double convertAngBohr = 1.8897259860;
-  string file = "../h2o.xyz";
+//  string file = "../h2o.xyz";
 //  string file = "H2.xyz";
-  ifstream geometry(file.c_str(), ios::in);
+  ifstream geometry;
   
-  if (!geometry) {
-    cerr << "The file can't be open." << endl;
-    exit(EXIT_FAILURE);
+  if (mpi_info.sys_master) {
+    std::cout << "Reading geometry from " << filename << std::endl;
+    geometry.open(filename.c_str(), ios::in);
+  if (!geometry.is_open()) {
+    std::cerr << filename << " does not exist" << std::endl;
+    std::exit(EXIT_FAILURE);
+    }
   }
-  
+
+#ifdef HAVE_MPI
+  MPI_Barrier(MPI_COMM_WORLD);
+  MPI_Bcast(&natom, 1, MPI_INT, 0, MPI_COMM_WORLD);
+  MPI_Barrier(MPI_COMM_WORLD);
+#endif
+
   geometry >> nNuc;
   geometry.ignore();
   geom.resize(nNuc);
+
+  if (mpi_info.sys_master) {
+    cout << "Printing input geometry in angstroms" << endl;
+    cout << "-----------------------------------------------------------------------------------------------------------" << endl;
+    cout << "\tAtom\t            x                             y                             z" << endl;
+    cout << "--------------------------------------------------------------------------------- " << endl;
+  }  
   for(int i=0; i<nNuc; ++i) {
     coor[0] = coor[1] = coor[2] = 0.0;
     atomicNumber = 0;
@@ -31,9 +50,31 @@ void Molecule::readCoordinates(fstream& fileXYZ) {
     geom[i].nCoor[0] = coor[0] * convertAngBohr;
     geom[i].nCoor[1] = coor[1] * convertAngBohr;
     geom[i].nCoor[2] = coor[2] * convertAngBohr;
+    
+    if (mpi_info.sys_master) {
+      cout << "\t " << atomType << "\t";
+      cout << setw(30) << setprecision(16) << fixed << coor[0];
+      cout << setw(30) << setprecision(16) << fixed << coor[1];
+      cout << setw(30) << setprecision(16) << fixed << coor[2] << endl;
+    }
+
+#ifdef HAVE_MPI
+    MPI_Barrier(MPI_COMM_WORLD);
+    MPI_Bcast(&pos, 3, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&znum, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Barrier(MPI_COMM_WORLD);
+#endif
   }
 
   geometry.close();
+
+  if (mpi_info.sys_master) {
+    std::cout << "-----------------------------------------------------------------------------------------------------------" << std::endl;
+    std::cout << std::setprecision(6);
+    std::cout << std::endl
+              << std::endl;
+  }
+
 }
 
 void Molecule::getAtomicNumber (string atomType) {
