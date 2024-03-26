@@ -34,6 +34,20 @@ IOPs::IOPs() {
   iopns[KEYS::MOVECS] = 0;  // default is binary
 }
 
+template <class T>
+T string_to_enum(std::string str, const std::vector<std::string>& T_vals) {
+  std::transform(str.begin(), str.end(), str.begin(), ::toupper);
+  auto it = std::find(T_vals.begin(), T_vals.end(), str);
+
+  if (it == T_vals.end()) {
+    std::cerr << str << " not reconginzed" << std::endl;
+    exit(0);
+  }
+
+  return static_cast<T>(std::distance(T_vals.begin(), it));
+}
+
+
 void IOPs::read(const MPI_info& mpi_info, const std::string& file) {
   /*
    * reads and stores options mcin file provided as command line argument
@@ -45,12 +59,16 @@ void IOPs::read(const MPI_info& mpi_info, const std::string& file) {
    *  -write functions to convert strings to enums
    *  -clean up keys
    */
-  KEYS::KEYS keyval;
-  KEYS::KEY_TYPE key_type;
+  KEYS::KeyVal keyval;
 
   bool keySet;
   std::string str;
   std::string key;
+
+  const std::vector<std::string> key_vals = {
+      "JOBNAME", "JOBTYPE", "SPHERICAL", "FREEZE_CORE", "MC_TRIAL",  // 0-4 
+      "ELECTRON_PAIRS", "MC_DELX", "GEOM", "BASIS", "MC_BASIS",      // 5-9
+      "NBLOCK", "MOVECS", "DEBUG"};                                  // 10-12
 
   if (mpi_info.sys_master) {
     std::ifstream input(file.c_str());
@@ -64,63 +82,92 @@ void IOPs::read(const MPI_info& mpi_info, const std::string& file) {
       std::istringstream ss(str);
       while (ss >> key) {
         if (keySet == false) {  // if key not set, determine key value from key_vals arrays
-          keyval = string_to_enum<KEYS::KEYS>(key, KEYS::key_strings);
-          keySet = true;
-
-          auto keyval_it = KEYS::KEY_TYPE_TABLE.find(keyval);
-          if (keyval_it != KEYS::KEY_TYPE_TABLE.end()) {
-            key_type = keyval_it->second;
+          std::transform(key.begin(), key.end(), key.begin(), ::toupper);
+          auto it = std::find(key_vals.begin(), key_vals.end(), key);
+          if (it != key_vals.end()) {
+            keyval = static_cast<KEYS::KeyVal>(std::distance(key_vals.begin(), it));
           } else {
-            key_type = KEYS::OTHER;
+            std::cerr << "Key " << key << " not reconginzed" << std::endl;
+            exit(0);
           }
+          keySet = true;
         } else {
-          if (key_type == KEYS::STRING) {
-            sopns[keyval] = key;
-            keySet = false;
-          } else if (key_type == KEYS::BOOL) {
-            bopns[keyval] = (stoi(key, nullptr) != 0);
-            keySet = false;
-          } else if (key_type == KEYS::INT) {
-            iopns[keyval] = stoi(key, nullptr);
-            keySet = false;
-          } else if (key_type == KEYS::DOUBLE) {
-            dopns[keyval] = stod(key, nullptr);
-            keySet = false;
-          } else {
             switch (keyval) {
               case KEYS::JOBTYPE:
-                iopns[keyval] = string_to_enum<JOBTYPE::JOBTYPE>(key, JOBTYPE::jobtype_strings);
-                keySet = false;
-                break;
-              case KEYS::NBLOCK:
-                iopns[keyval] = stoi(key, nullptr);
-                if (iopns[keyval] > 20) {
-                  std::cerr << "NBlock must be less than 20" << std::endl;
-                  exit(EXIT_FAILURE);
-                } else if (iopns[keyval] <= 0) {
-                  iopns[keyval] = 1;
-                }
-                keySet = false;
-                break;
-              case KEYS::MOVECS:
-                if (key == "ASCII") {
-                  iopns[keyval] = 1;
-                } else if (key == "END") {
-                  keySet = false;
+              std::transform(key.begin(), key.end(), key.begin(), ::toupper);
+              {
+                auto it = std::find(key_vals.begin(), key_vals.end(), key);
+                if (it != key_vals.end()) {
+                  iopns[keyval] = std::distance(key_vals.begin(), it);
                 } else {
-                  sopns[keyval] = key;
+                  std::cerr << "Job type " << key << " not reconginzed" << std::endl;
+                  exit(0);
                 }
-                break;
-              default:
-                std::cerr << "KEY \"" << key << "\" NOT RECONGNIZED" << std::endl;
+              }
+              keySet = false;
+              break;
+            case KEYS::JOBNAME:
+              sopns[keyval] = key;
+              keySet = false;
+              break;
+            case KEYS::SPHERICAL:
+              bopns[keyval] = stoi(key, nullptr);
+              keySet = false;
+              break;
+            case KEYS::MC_TRIAL:
+              iopns[keyval] = stoi(key, nullptr);
+              keySet = false;
+              break;
+            case KEYS::ELECTRON_PAIRS:
+              iopns[keyval] = stoi(key, nullptr);
+              keySet = false;
+              break;
+            case KEYS::MC_DELX:
+              dopns[keyval] = stod(key, nullptr);
+              keySet = false;
+              break;
+            case KEYS::GEOM:
+              sopns[keyval] = key;
+              keySet = false;
+              break;
+            case KEYS::BASIS:
+              sopns[keyval] = key;
+              keySet = false;
+              break;
+            case KEYS::MC_BASIS:
+              sopns[keyval] = key;
+              keySet = false;
+              break;
+            case KEYS::NBLOCK:
+              iopns[keyval] = stoi(key, nullptr);
+              if (iopns[keyval] > 20) {
+                std::cerr << "NBlock must be less than 20" << std::endl;
                 exit(EXIT_FAILURE);
-            }
+              } else if (iopns[keyval] <= 0) {
+                iopns[keyval] = 1;
+              }
+              keySet = false;
+              break;
+            case KEYS::MOVECS:
+              if (key == "ASCII") {
+                iopns[keyval] = 1;
+              } else if (key == "END") {
+                keySet = false;
+              } else {
+                sopns[keyval] = key;
+              }
+              break;
+            default:
+              std::cerr << "KEY \"" << key << "\" NOT RECONGNIZED" << std::endl;
+              exit(EXIT_FAILURE);
           }
         }
       }
     }
     input.close();
   }
+
+
 
 #ifdef HAVE_MPI
   MPI_Barrier(MPI_COMM_WORLD);

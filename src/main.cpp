@@ -30,12 +30,12 @@ int main (int argc, char *argv[]) {
 
   if (argc != 2) {
     if (mpi_info.sys_master) {
-      printf("Usage: mcmpN.x <input>\n");
+      printf("Usage: MC-Rela <input>\n");
     }
     exit(EXIT_FAILURE);
   } else {
     if (mpi_info.sys_master) {
-      printf("MC-GFn program developed by the Hirata lab\n");
+      printf("Program developed by the Hirata lab\n");
     }
   }
   mpi_info.print();

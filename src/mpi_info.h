@@ -1,13 +1,6 @@
 #ifndef MPI_H
 #define MPI_H
 
-#include <string>
-#include <vector>
-
-#ifdef HAVE_MPI
-#include "mpi.h"
-#endif
-
 class MPI_info {
  public:
   MPI_info();
