@@ -30,7 +30,7 @@ int main (int argc, char *argv[]) {
     }
   } else {
     if (mpi_info.sys_master) {
-      printf("Program developed by the Hirata lab\n");
+      printf("Program developed by Julio Cruz\n");
     }
   }
   
