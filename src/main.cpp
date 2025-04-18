@@ -48,7 +48,7 @@ int main (int argc, char *argv[]) {
 
   if (iops.iopns[KEYS::JOBTYPE] == JOBTYPE::RELATIVISTIC) {
   
-    cout << "Relativistic Type Job" << endl;
+    cout << "Relativistic Type Job Test" << endl;
 
 
   } else if (iops.iopns[KEYS::JOBTYPE] == JOBTYPE::NON_RELATIVISTIC) {
